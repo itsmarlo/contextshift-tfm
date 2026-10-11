@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contextshift.example/schemas/results-1.0.json",
+  "title": "ContextShift measured experiment bundle",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "results"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/result"
+      }
+    }
+  },
+  "$defs": {
+    "probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "prediction": {
+      "type": "object",
+      "required": [
+        "id",
+        "truth",
+        "probability",
+        "predicted"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "truth": {
+          "enum": [
+            0,
+            1
+          ]
+        },
+        "probability": {
+          "$ref": "#/$defs/probability"
+        },
+        "predicted": {
+          "enum": [
+            0,
+            1
+          ]
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "required": [
+        "accuracy",
+        "precision",
+        "recall",
+        "f1",
+        "roc_auc",
+        "pr_auc",
+        "log_loss",
+        "brier",
+        "positive_rate",
+        "confusion"
+      ],
+      "properties": {
+        "accuracy": {
+          "$ref": "#/$defs/probability"
+        },
+        "precision": {
+          "$ref": "#/$defs/probability"
+        },
+        "recall": {
+          "$ref": "#/$defs/probability"
+        },
+        "f1": {
+          "$ref": "#/$defs/probability"
+        },
+        "roc_auc": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/probability"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pr_auc": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/probability"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "log_loss": {
+          "type": "number",
+          "minimum": 0
+        },
+        "brier": {
+          "$ref": "#/$defs/probability"
+        },
+        "positive_rate": {
+          "$ref": "#/$defs/probability"
+        },
+        "confusion": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "required": [
+        "experiment_id",
+        "experiment_type",
+        "dataset_version",
+        "model_name",
+        "model_version",
+        "seed",
+        "context_size",
+        "configuration",
+        "metrics",
+        "predictions",
+        "fit_seconds",
+        "predict_seconds",
+        "executed_at",
+        "hardware",
+        "context_preview",
+        "test_preview",
+        "context_summary",
+        "test_summary",
+        "calibration"
+      ],
+      "properties": {
+        "experiment_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "experiment_type": {
+          "enum": [
+            "size",
+            "missing",
+            "labels",
+            "noise",
+            "outliers",
+            "relevance",
+            "imbalance",
+            "drift"
+          ]
+        },
+        "dataset_version": {
+          "type": "string"
+        },
+        "model_name": {
+          "enum": [
+            "TabPFN",
+            "XGBoost"
+          ]
+        },
+        "model_version": {
+          "type": "string"
+        },
+        "seed": {
+          "type": "integer"
+        },
+        "context_size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "configuration": {
+          "type": "object"
+        },
+        "metrics": {
+          "$ref": "#/$defs/metrics"
+        },
+        "predictions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/prediction"
+          }
+        },
+        "fit_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "predict_seconds": {
+          "type": "number",
+          "minimum": 0
+        },
+        "executed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "hardware": {
+          "type": "string"
+        },
+        "context_preview": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "test_preview": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "context_summary": {
+          "type": "object"
+        },
+        "test_summary": {
+          "type": "object"
+        },
+        "calibration": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "confidence",
+              "observed",
+              "count"
+            ],
+            "properties": {
+              "confidence": {
+                "$ref": "#/$defs/probability"
+              },
+              "observed": {
+                "$ref": "#/$defs/probability"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
