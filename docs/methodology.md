@@ -28,7 +28,7 @@ The generated data is small and designed for explanation. The conclusions cannot
 
 ## Reproduce
 
-Use Python 3.11 or 3.12. Create a virtual environment, install `experiments/requirements.txt`, then run `python -m experiments.run_experiments --mode quick` or `--mode full` from the repository root. The first TabPFN run downloads pretrained weights. The full grid is compute-intensive. Rebuild the frontend after export. The browser simulator is independent of this pipeline.
+Use Python 3.11 or 3.12. Create a virtual environment, install `experiments/requirements.txt`, then run `python -m experiments.run_experiments --mode quick` or `--mode full` from the repository root. On the validation Mac, set `OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1` for the command to avoid an OpenMP initialization crash. The first TabPFN run downloads pretrained weights. The bundled full grid contains 132 matched configurations for each model across seeds 7, 17, and 27. Rebuild the frontend after export. The browser simulator is independent of this pipeline.
 
 ## References
 

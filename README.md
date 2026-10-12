@@ -11,7 +11,7 @@ ContextShift is a static research dashboard for studying how context size, quali
 - `src/pages/Learn.tsx` and `Methodology.tsx`: conceptual teaching and scientific protocol.
 - `src/simulation/model.ts`: documented browser similarity predictor.
 - `experiments/`: synthetic data, controlled interventions, model adapters, metrics, and JSON export.
-- `public/experiments/results.json`: 132 measured full-grid XGBoost runs generated on the validation host; TabPFN runs remain unavailable until local weights and dependencies are installed.
+- `public/experiments/results.json`: 264 matched, measured full-grid runs (132 each for TabPFN and XGBoost) generated with the pinned Python 3.12 environment.
 - `docs/methodology.md`: equations, controls, and limitations. `docs/result.schema.json` defines the measured-result bundle.
 
 The simulator gives each context row a weight `exp(-2 × mean squared scaled feature distance)` multiplied by the share of observed features. The probability is the weighted mean of known labels. This is an educational calculation, not TabPFN inference. Missing features contribute no distance and reduce a row's weight.
@@ -33,12 +33,12 @@ Use Python 3.11 or 3.12. TabPFN's first run downloads model weights under Prior 
 python3.11 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r experiments/requirements.txt
-python -m experiments.run_experiments --mode quick
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 python -m experiments.run_experiments --mode quick
 # For the full grid (multiple seeds and all configured levels):
-python -m experiments.run_experiments --mode full
+OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 python -m experiments.run_experiments --mode full
 ```
 
-Use `--models XGBoost` for a baseline-only diagnostic run, or `--output /path/to/results.json` to avoid replacing the site bundle. A dashboard comparison needs both models' measured runs. The runner never silently substitutes a simulation for TabPFN. If weights, dependencies, or hardware are unavailable, the app keeps the empty state and reports no measured result. The included 132-run XGBoost baseline was measured with XGBoost 3.3.0 and Python 3.14 on the validation host; its exact model version and hardware are recorded per result. Regenerate with the pinned Python 3.11/3.12 environment for a fully pinned run. No TabPFN result is bundled yet.
+The thread limits avoid an OpenMP initialization crash observed on the validation Mac; they also make the CPU run reproducible there. Use `--models XGBoost` for a baseline-only diagnostic run, or `--output /path/to/results.json` to avoid replacing the site bundle. A dashboard comparison needs both models' measured runs. The runner never silently substitutes a simulation for TabPFN. If weights, dependencies, or hardware are unavailable, the app keeps the empty state and reports no measured result. The included results were generated with TabPFN 2.2.1 and XGBoost 2.1.3; exact versions and hardware are recorded per run.
 
 ## Quality checks and build
 
@@ -92,6 +92,7 @@ Extra context may add useful information or noise. Similar-looking examples need
 
 - [Christoph Molnar, *Tabular Foundation Models*](https://tabularfoundationmodels.com/)
 - [TabPFN source and installation](https://github.com/PriorLabs/TabPFN)
+- [TabPFN v2 classifier license](https://huggingface.co/Prior-Labs/TabPFN-v2-clf/blob/main/LICENSE.txt). Built with PriorLabs-TabPFN.
 - [Hollmann et al., TabPFN paper](https://arxiv.org/abs/2207.01848)
 
 ## License
