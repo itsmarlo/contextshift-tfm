@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { explainCsv, featureScales, isLabeled, parseCsv, prepareDataset } from './csv'
 
-const sample = readFileSync('public/samples/contextshift-sample.csv', 'utf8')
+const sample = readFileSync('public/samples/contextshift-predict-sample.csv', 'utf8')
 
 describe('CSV experiments', () => {
   it('parses the downloadable sample and holds the query out of context', () => {

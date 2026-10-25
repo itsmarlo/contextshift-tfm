@@ -7,11 +7,11 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 
 describe('CSV experiment page', () => {
   it('loads the sample, changes context, and resets the prediction', async () => {
-    const sample = readFileSync('public/samples/contextshift-sample.csv', 'utf8')
+    const sample = readFileSync('public/samples/contextshift-predict-sample.csv', 'utf8')
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, text: async () => sample }))
     render(<CsvExperiment />)
     fireEvent.click(screen.getByText('Load sample'))
-    expect(await screen.findByText(/Loaded contextshift-sample.csv/)).toBeTruthy()
+    expect(await screen.findByText(/Loaded contextshift-predict-sample.csv/)).toBeTruthy()
     expect((screen.getByLabelText('Label column') as HTMLSelectElement).value).toBe('claim')
     expect((screen.getByLabelText('Prediction row') as HTMLSelectElement).value).toBe('20')
     expect(screen.getByText('Predicted cells')).toBeTruthy()

@@ -2,7 +2,7 @@ import { useMemo, useState, type ChangeEvent } from 'react'
 import { explainCsv, featureScales, isLabeled, isPredictionCell, parseCsv, prepareDataset, type CsvTable, type LabeledRow } from '../simulation/csv'
 
 const percent = (value: number | null) => value === null ? '—' : `${Math.round(value * 100)}%`
-const sampleUrl = `${import.meta.env.BASE_URL}samples/contextshift-sample.csv`
+const sampleUrl = `${import.meta.env.BASE_URL}samples/contextshift-predict-sample.csv`
 
 export function CsvExperiment() {
   const [table, setTable] = useState<CsvTable | null>(null)
@@ -64,7 +64,7 @@ export function CsvExperiment() {
     try {
       const response = await fetch(sampleUrl)
       if (!response.ok) throw new Error()
-      load(await response.text(), 'contextshift-sample.csv')
+      load(await response.text(), 'contextshift-predict-sample.csv')
     } catch { setFileError('The sample CSV could not be loaded.') }
   }
 
