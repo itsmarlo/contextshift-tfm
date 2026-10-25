@@ -1,7 +1,10 @@
 export interface CsvTable { headers: string[]; rows: string[][] }
-export interface NumericRow { id: number; values: (number | null)[]; label: 0 | 1 }
+export interface NumericRow { id: number; values: (number | null)[]; label: 0 | 1 | null }
+export interface LabeledRow extends NumericRow { label: 0 | 1 }
 export interface NumericDataset { features: string[]; rows: NumericRow[] }
 export interface CsvInfluence { id: number; label: 0 | 1; share: number }
+export const isLabeled = (row: NumericRow): row is LabeledRow => row.label !== null
+export const isPredictionCell = (value: string) => value === '' || value.toUpperCase() === '[PREDICT]'
 
 export function parseCsv(text: string): CsvTable {
   if (text.length > 1_000_000) throw new Error('Choose a CSV smaller than 1 MB.')
@@ -49,13 +52,13 @@ export function prepareDataset(table: CsvTable, target: string): NumericDataset 
   const targetIndex = table.headers.indexOf(target)
   if (targetIndex < 0) throw new Error('Choose a label column.')
   const labels = table.rows.map(row => row[targetIndex])
-  if (labels.some(value => value !== '0' && value !== '1')) throw new Error('The label column must contain only 0 and 1.')
-  if (new Set(labels).size < 2) throw new Error('The label column needs both 0 and 1 examples.')
+  if (labels.some(value => !isPredictionCell(value) && value !== '0' && value !== '1')) throw new Error('The label column must contain 0, 1, blank, or [PREDICT].')
+  if (!labels.includes('0') || !labels.includes('1')) throw new Error('The label column needs both 0 and 1 examples.')
   const featureIndices = table.headers.map((_, i) => i).filter(i => i !== targetIndex && table.rows.some(row => row[i] !== '') && table.rows.every(row => row[i] === '' || (Number.isFinite(Number(row[i])) && row[i].trim() !== '')))
   if (!featureIndices.length) throw new Error('Add at least one numeric feature column. Blank feature cells are allowed.')
   return {
     features: featureIndices.map(i => table.headers[i]),
-    rows: table.rows.map((row, i) => ({ id: i + 1, values: featureIndices.map(index => row[index] === '' ? null : Number(row[index])), label: Number(labels[i]) as 0 | 1 })),
+    rows: table.rows.map((row, i) => ({ id: i + 1, values: featureIndices.map(index => row[index] === '' ? null : Number(row[index])), label: isPredictionCell(labels[i]) ? null : Number(labels[i]) as 0 | 1 })),
   }
 }
 
@@ -67,7 +70,7 @@ export function featureScales(rows: NumericRow[], count: number): number[] {
   })
 }
 
-export function explainCsv(rows: NumericRow[], query: NumericRow, scales: number[]): { probability: number | null; influences: CsvInfluence[] } {
+export function explainCsv(rows: LabeledRow[], query: NumericRow, scales: number[]): { probability: number | null; influences: CsvInfluence[] } {
   const weighted = rows.map(row => {
     let distance = 0
     let observed = 0

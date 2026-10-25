@@ -19,3 +19,5 @@ age,premium,previous_claims,risk_tier,claim
 29,900,0,1,0
 47,1710,2,2,1
 36,1190,0,1,0
+45,1530,1,2,[PREDICT]
+32,1030,0,1,[PREDICT]
