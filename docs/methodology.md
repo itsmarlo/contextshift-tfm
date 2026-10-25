@@ -24,7 +24,7 @@ Predictions use a 0.5 decision threshold. Accuracy, precision, recall, F1, ROC A
 
 ## Browser simulator
 
-The Playground demonstrates the input structure described by Hollmann et al.: labeled context rows and an unlabeled query produce a prediction without changing pretrained weights. Its browser calculation is a separate, explicit similarity-weighted average, not the TabPFN algorithm. Quick actions change one visible example or feature at a time. The influence shares are normalized weights from this educational calculation; they are not TabPFN attention weights or causal feature attributions. The original ten rows stay fixed as the comparison reference.
+The Playground demonstrates the input structure described by Hollmann et al.: labeled context rows and an unlabeled query produce a prediction without changing pretrained weights. Its browser calculation is a separate, explicit similarity-weighted average, not the TabPFN algorithm. Quick actions change one visible example or feature at a time. The add-example action creates a nearby hypothetical labeled row; it does not reveal or reuse the query’s hidden label. The influence shares are normalized weights from this educational calculation; they are not TabPFN attention weights or causal feature attributions. The original ten rows stay fixed as the comparison reference.
 
 ## Limits
 

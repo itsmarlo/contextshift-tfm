@@ -28,8 +28,10 @@ describe('Playground', () => {
     render(<Playground results={[]} />)
     const modified = () => screen.getByText('Modified probability').parentElement?.textContent
     const original = modified()
-    fireEvent.click(screen.getByText('Add matching claim'))
+    fireEvent.click(screen.getByText('Add similar claim'))
     expect(screen.getAllByText('11 rows').length).toBeGreaterThan(0)
+    expect((screen.getByLabelText('Age for row 111') as HTMLInputElement).value).toBe('46')
+    expect((screen.getByLabelText('Premium for row 111') as HTMLInputElement).value).toBe('1650')
     expect(modified()).not.toBe(original)
     fireEvent.click(screen.getByText('Reset example'))
     expect(modified()).toBe(original)
