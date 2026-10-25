@@ -113,6 +113,11 @@ Extra context may add useful information or noise. Similar-looking examples need
 - [TabPFN source and installation](https://github.com/PriorLabs/TabPFN)
 - [TabPFN v2 classifier license](https://huggingface.co/Prior-Labs/TabPFN-v2-clf/blob/main/LICENSE.txt). Built with PriorLabs-TabPFN.
 - [Hollmann et al., TabPFN paper](https://arxiv.org/abs/2207.01848)
+- [Hollmann et al., TabPFN benchmark in Nature](https://www.nature.com/articles/s41586-024-08328-6)
+- [Spinaci et al., ConTextTab paper linked by the SAP-RPT-OSS model card](https://arxiv.org/abs/2506.10707)
+- [Erickson et al., TabArena benchmark](https://proceedings.neurips.cc/paper_files/paper/2025/hash/1697e3fb412da11dc9488249f9e7bbc9-Abstract-Datasets_and_Benchmarks_Track.html)
+- [Chen and Guestrin, XGBoost](https://arxiv.org/abs/1603.02754) and [Prokhorenkova et al., CatBoost](https://proceedings.neurips.cc/paper/2018/hash/14491b756b3a51daac41c24863285549-Abstract.html)
+- [Moreno-Torres et al., dataset shift taxonomy](https://www.sciencedirect.com/science/article/pii/S0031320311002901)
 
 ## License
 
