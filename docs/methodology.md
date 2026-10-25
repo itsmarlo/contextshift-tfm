@@ -26,6 +26,8 @@ Predictions use a 0.5 decision threshold. Accuracy, precision, recall, F1, ROC A
 
 The Playground demonstrates the input structure described by Hollmann et al.: labeled context rows and an unlabeled query produce a prediction without changing pretrained weights. Its browser calculation is a separate, explicit similarity-weighted average, not the TabPFN algorithm. Quick actions change one visible example or feature at a time. The add-example action creates a nearby hypothetical labeled row; it does not reveal or reuse the query’s hidden label. The influence shares are normalized weights from this educational calculation; they are not TabPFN attention weights or causal feature attributions. The original ten rows stay fixed as the comparison reference.
 
+The **My CSV** workspace applies the same educational rule to a local file. It accepts up to 500 rows, numeric features, blank feature values, and a binary 0/1 target. It holds one selected row out of the context, computes feature scales from the other rows, and uses those fixed scales while the context changes. The displayed percentage is a weighted label average, not a calibrated risk estimate or measured foundation-model result. User CSV bytes stay in browser memory; the sample is fetched from the public site.
+
 ## Limits
 
 The generated data is small and designed for explanation. The conclusions cannot be generalized to live insurance portfolios. Population similarity and recent context are not guaranteed to improve predictions. Covariate shift changes the feature distribution; prior shift changes class prevalence; concept drift changes the feature–outcome relationship. These can co-occur in the generator. Model weights are downloaded separately and are not committed.

@@ -2,11 +2,12 @@
 
 **The Tabular Foundation Model Lab** — Same model. Different context. Different predictions.
 
-ContextShift is a static research dashboard for studying how context size, quality, relevance, class balance, and drift affect tabular predictions. It includes an editable browser demonstration and a separate offline pipeline for measured TabPFN and XGBoost experiments. All data is synthetic. No browser action calls a pretrained model.
+ContextShift is a static research dashboard for studying how context size, quality, relevance, class balance, and drift affect tabular predictions. It includes an editable browser demonstration, a local CSV workspace, and a separate offline pipeline for measured TabPFN and XGBoost experiments. The bundled study data is synthetic. No browser action calls a pretrained model.
 
 ## Architecture
 
 - `src/pages/Playground.tsx`: editable three-panel workspace; a similarity-weighted educational simulator, and a read-only view of recorded runs.
+- `src/pages/CsvExperiment.tsx`: browser-only CSV workspace for numeric features and a binary 0/1 label; one row is held out as the query.
 - `src/pages/Experiments.tsx` and `Comparison.tsx`: charts built only from exported measured JSON.
 - `src/pages/Learn.tsx` and `Methodology.tsx`: conceptual teaching and scientific protocol.
 - `src/simulation/model.ts`: documented browser similarity predictor.
@@ -15,6 +16,10 @@ ContextShift is a static research dashboard for studying how context size, quali
 - `docs/methodology.md`: equations, controls, and limitations. `docs/result.schema.json` defines the measured-result bundle.
 
 Start with the Playground’s quick context experiments: flip the closest label, add a nearby hypothetical claim example, or hide a feature. The prediction and row influence display update immediately, and Reset returns to the original ten rows. More interventions and direct cell edits remain available. The simulator gives each context row a weight `exp(-2 × mean squared scaled feature distance)` multiplied by the share of observed features. The probability is the weighted mean of known labels. This is an educational calculation, not TabPFN inference. Missing features contribute no distance and reduce a row's weight.
+
+## Try your own CSV
+
+Open **My CSV** and load a file or use the [sample CSV](public/samples/contextshift-sample.csv). Files need a header, 4–500 rows, at most 50 feature columns, at least one numeric feature, and a label column containing both `0` and `1`. Blank numeric feature cells are allowed; text columns are skipped. Choose the label and query row, then vary context size, flip an influential label, hide a feature, or edit context cells. The query row is excluded from the context and its label is never used for prediction. Your file stays in the browser tab; no CSV content is sent to the site or stored remotely. This workspace uses the transparent educational similarity model, not a live TabPFN or XGBoost run.
 
 ## Run locally on macOS
 
