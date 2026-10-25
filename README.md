@@ -51,6 +51,8 @@ The [TabPFN benchmark paper](https://www.nature.com/articles/s41586-024-08328-6)
 
 On this project's synthetic clean context with 100 training rows, mean ROC AUC ± SD across three seeds is **0.664 ± 0.045 for CatBoost, 0.613 ± 0.107 for TabPFN, and 0.582 ± 0.118 for XGBoost**. This is one synthetic task with fixed model settings, and three context seeds do not establish statistical superiority across datasets. The held-out positive share is 9.7%; high accuracy can result from predicting mostly negative cases. The dashboard defaults to ROC AUC and allows inspection of PR AUC, F1, log loss, and individual predictions. It does not claim these local measurements are a real-world benchmark.
 
+At 1,000 context rows, the corresponding mean ROC AUC is 0.734 for TabPFN and 0.741 for CatBoost, a gap of 0.0075. TabPFN scores higher for one of the three context seeds and CatBoost for two. The dashboard shows this paired seed count alongside the chart so the small difference is not presented as a decisive model ranking.
+
 ## Quality checks and build
 
 ```bash
