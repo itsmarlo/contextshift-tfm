@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { initialRows, simulate, testRows } from './model'
+import { explainSimulation, initialRows, simulate, testRows } from './model'
 
 describe('educational similarity model', () => {
   it('responds to a changed label without mutating input', () => {
@@ -11,5 +11,11 @@ describe('educational similarity model', () => {
   it('handles empty and missing contexts', () => {
     expect(simulate([], testRows[0])).toBeNull()
     expect(simulate(initialRows.map(row => ({ ...row, age: null, premium: null, previousClaims: null, duration: null, insured: null, risk: null, geo: null, payment: null })), testRows[0])).toBeNull()
+  })
+  it('reports row shares that reproduce the probability', () => {
+    const { probability, influences } = explainSimulation(initialRows, testRows[0])
+    expect(influences.reduce((total, row) => total + row.share, 0)).toBeCloseTo(1)
+    expect(influences.reduce((total, row) => total + row.share * row.label, 0)).toBeCloseTo(probability!)
+    expect(influences[0].share).toBeGreaterThanOrEqual(influences[1].share)
   })
 })

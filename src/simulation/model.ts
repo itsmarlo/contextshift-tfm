@@ -28,8 +28,9 @@ export const testRows: Omit<Row, 'label'>[] = [
   { id: 903, age: 56, premium: 2050, previousClaims: 2, duration: 8, insured: 115, risk: 3, geo: 1, payment: 1 },
 ]
 const scales: Record<Feature, number> = { age: 25, premium: 900, previousClaims: 2.5, duration: 8, insured: 80, risk: 2, geo: 1, payment: 2 }
-export function simulate(rows: Row[], test: Omit<Row, 'label'>): number | null {
-  if (!rows.length) return null
+export interface RowInfluence { id: number; label: 0 | 1; weight: number; share: number; observed: number }
+
+export function explainSimulation(rows: Row[], test: Omit<Row, 'label'>): { probability: number | null; influences: RowInfluence[] } {
   const weighted = rows.map(row => {
     let distance = 0; let observed = 0
     for (const { key } of features) {
@@ -38,8 +39,15 @@ export function simulate(rows: Row[], test: Omit<Row, 'label'>): number | null {
       distance += ((a - b) / scales[key]) ** 2
       observed++
     }
-    return { weight: observed ? Math.exp(-2 * distance / observed) * (observed / features.length) : 0, label: row.label }
+    return { id: row.id, weight: observed ? Math.exp(-2 * distance / observed) * (observed / features.length) : 0, label: row.label, observed }
   })
   const total = weighted.reduce((sum, x) => sum + x.weight, 0)
-  return total ? weighted.reduce((sum, x) => sum + x.weight * x.label, 0) / total : null
+  return {
+    probability: total ? weighted.reduce((sum, x) => sum + x.weight * x.label, 0) / total : null,
+    influences: weighted.map(row => ({ ...row, share: total ? row.weight / total : 0 })).sort((a, b) => b.share - a.share),
+  }
+}
+
+export function simulate(rows: Row[], test: Omit<Row, 'label'>): number | null {
+  return explainSimulation(rows, test).probability
 }

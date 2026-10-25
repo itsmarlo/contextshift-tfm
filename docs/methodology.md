@@ -22,6 +22,10 @@ Missing values are represented as NaN in the model inputs. TabPFN and XGBoost pe
 
 Predictions use a 0.5 decision threshold. Accuracy, precision, recall, F1, ROC AUC, PR AUC, log loss, Brier score, predicted positive share, and the 2×2 confusion matrix are computed on held-out truth. Zero division yields zero precision or recall. ROC and PR AUC are `null` if only one test class is present. Each run records model and dataset versions, seed, configuration, the first ten individual prediction probabilities and five calibration bins computed over the full test set, timing, UTC timestamp, hardware, and a ten-row context preview. The JSON bundle has `schema_version: "1.0"`. No interpolation is used for unrun combinations.
 
+## Browser simulator
+
+The Playground demonstrates the input structure described by Hollmann et al.: labeled context rows and an unlabeled query produce a prediction without changing pretrained weights. Its browser calculation is a separate, explicit similarity-weighted average, not the TabPFN algorithm. Quick actions change one visible example or feature at a time. The influence shares are normalized weights from this educational calculation; they are not TabPFN attention weights or causal feature attributions. The original ten rows stay fixed as the comparison reference.
+
 ## Limits
 
 The generated data is small and designed for explanation. The conclusions cannot be generalized to live insurance portfolios. Population similarity and recent context are not guaranteed to improve predictions. Covariate shift changes the feature distribution; prior shift changes class prevalence; concept drift changes the feature–outcome relationship. These can co-occur in the generator. Model weights are downloaded separately and are not committed.

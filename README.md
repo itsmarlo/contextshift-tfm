@@ -14,7 +14,7 @@ ContextShift is a static research dashboard for studying how context size, quali
 - `public/experiments/results.json`: 264 matched, measured full-grid runs (132 each for TabPFN and XGBoost) generated with the pinned Python 3.12 environment.
 - `docs/methodology.md`: equations, controls, and limitations. `docs/result.schema.json` defines the measured-result bundle.
 
-The simulator gives each context row a weight `exp(-2 × mean squared scaled feature distance)` multiplied by the share of observed features. The probability is the weighted mean of known labels. This is an educational calculation, not TabPFN inference. Missing features contribute no distance and reduce a row's weight.
+Start with the Playground’s quick context experiments: flip the closest label, add a hypothetical matching claim example, or hide a feature. The prediction and row influence display update immediately, and Reset returns to the original ten rows. More interventions and direct cell edits remain available. The simulator gives each context row a weight `exp(-2 × mean squared scaled feature distance)` multiplied by the share of observed features. The probability is the weighted mean of known labels. This is an educational calculation, not TabPFN inference. Missing features contribute no distance and reduce a row's weight.
 
 ## Run locally on macOS
 

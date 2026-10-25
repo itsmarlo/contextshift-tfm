@@ -10,3 +10,28 @@
 .test-features{display:grid;grid-template-columns:1fr 1fr;gap:.35rem;font-size:.61rem;color:#80929c;margin:.4rem 0 1rem}.test-features span{display:flex;justify-content:space-between;border-bottom:1px solid #e8edfa;padding:.2rem}.test-features strong{color:#273b68}
 .sidebar nav button.active{background:#ffd43c;color:#07143f;box-shadow:none}.sidebar nav button.active svg{color:#07143f}.sidebar nav button:hover:not(.active){background:#18317b;color:#fff}.primary-button{background:#ffd43c;border-color:#ffd43c;color:#07143f}.primary-button:hover{background:#eabc24;border-color:#eabc24}.synthetic-pill{background:#fff5cb;border-color:#f0d56d;color:#433300}.topbar{border-bottom:2px solid #ffd43c}
 @media(max-width:850px){.workspace,.study-grid,.learn-layout,.method-grid{grid-template-columns:minmax(0,1fr)}.workspace>.panel,.study-main,.study-side,.notice span{min-width:0}}
+.query-features{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.5rem;margin-top:.8rem}
+.query-features span{display:flex;justify-content:space-between;gap:.4rem;border:1px solid #e1e7f5;background:#f8faff;border-radius:4px;padding:.4rem .5rem;font-size:.65rem;color:#697d8d}
+.query-features strong{color:#203550;font-family:'IBM Plex Mono',monospace}
+.influence-panel{border-top:1px solid #e5eafa;margin-top:1rem;padding-top:1rem}
+.influence-heading{display:flex;align-items:center;justify-content:space-between;gap:.3rem;flex-wrap:wrap}
+.influence-heading h3{margin:0}
+.influence-panel p,.influence-panel small{display:block;font-size:.67rem;line-height:1.5;margin:.45rem 0;color:#718492}
+.influence-list{list-style:none;padding:0;margin:.7rem 0 0;display:grid;gap:.48rem}
+.influence-list li{display:grid;grid-template-columns:34px minmax(20px,1fr) 30px 48px;align-items:center;gap:.35rem;font-size:.65rem}
+.influence-id,.influence-list li>strong{font-family:'IBM Plex Mono',monospace;color:#263950}
+.influence-bar{height:6px;background:#e8edfa;border-radius:3px;overflow:hidden}
+.influence-bar i{display:block;height:100%;background:#0038ff;border-radius:3px}
+.influence-label{text-align:right;color:#6d808d}
+[data-theme=dark] .query-features span{background:#172858;border-color:#334675;color:#b8c8e7}
+[data-theme=dark] .query-features strong,[data-theme=dark] .influence-id,[data-theme=dark] .influence-list li>strong{color:#e9efff}
+@media(max-width:1250px){.prediction .influence-panel{grid-column:1/-1}}
+@media(max-width:600px){.query-features{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.scenario-panel{display:flex;align-items:center;justify-content:space-between;gap:1.2rem;padding:1.1rem 1.25rem;margin-bottom:1rem;background:#fff;border:1px solid #dce3f4;border-left:4px solid #ffd43c;border-radius:6px}
+.scenario-panel h2{margin:.35rem 0 .2rem;font-size:1rem}.scenario-panel p{margin:0;font-size:.72rem}.scenario-actions{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:flex-end}.scenario-actions button{background:#edf2ff;color:#123479;border:1px solid #cbd8f5;border-radius:4px;padding:.55rem .7rem;font-size:.7rem;font-weight:700}.scenario-actions button:hover{background:#dce7ff}.scenario-actions button:last-child{background:#fff;color:#405269}
+.advanced-controls{margin:.25rem 0 1rem;border-top:1px solid #e6eaf4;padding-top:.8rem}.advanced-controls summary{cursor:pointer;color:#203550;font-size:.75rem;font-weight:700}.advanced-controls[open] summary{margin-bottom:.6rem}
+[data-theme=dark] .scenario-panel{background:#111e47;border-color:#334675;border-left-color:#ffd43c}[data-theme=dark] .scenario-actions button{background:#1a2b58;color:#e9efff;border-color:#334675}[data-theme=dark] .advanced-controls summary{color:#e9efff}
+@media(max-width:1100px){.scenario-panel{align-items:flex-start;flex-direction:column}.scenario-actions{justify-content:flex-start}}
+.scenario-result{min-width:125px;border-left:1px solid #dce3f4;padding-left:1rem;display:flex;flex-direction:column;gap:.08rem}.scenario-result span{font-size:.62rem;color:#718492}.scenario-result strong{font-size:1.7rem;line-height:1.1;color:#07143f}.scenario-result small{font-size:.62rem;color:#405269}
+[data-theme=dark] .scenario-result{border-color:#334675}[data-theme=dark] .scenario-result strong{color:#e9efff}[data-theme=dark] .scenario-result small{color:#b8c8e7}
+@media(max-width:1100px){.scenario-result{border:0;border-top:1px solid #dce3f4;padding:1rem 0 0;min-width:0;width:100%}}
