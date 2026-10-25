@@ -43,7 +43,13 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREAD
 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 python -m experiments.run_experiments --mode full
 ```
 
-The thread limits avoid an OpenMP initialization crash observed on the validation Mac; they also make the CPU run reproducible there. Use `--models CatBoost --mode full --append` to add CatBoost measurements to an existing compatible export, or `--output /path/to/results.json` to avoid replacing the site bundle. The runner never silently substitutes a simulation for TabPFN. If weights, dependencies, or hardware are unavailable, the app keeps the empty state and reports no measured result. The included results use TabPFN 2.2.1, XGBoost 2.1.3, and CatBoost 1.2.10; exact model versions and hardware are recorded per run.
+The thread limits avoid an OpenMP initialization crash observed on the validation Mac; they also make the CPU run reproducible there. Use `--models CatBoost --mode full --append` to add CatBoost measurements to an existing compatible export, or `--output /path/to/results.json` to avoid replacing the site bundle. The runner never silently substitutes a simulation for a pretrained model. If weights, dependencies, or hardware are unavailable, the app keeps the empty state and reports no measured result. The included results use TabPFN 2.2.1, XGBoost 2.1.3, and CatBoost 1.2.10; exact model versions and hardware are recorded per run.
+
+### Add SAP RPT alongside TabPFN
+
+The optional `SAP-RPT-OSS` adapter uses the [research checkpoint released by SAP](https://huggingface.co/SAP/sap-rpt-1-oss), which is separate from SAP's commercial RPT Playground model. Accept the checkpoint's Hugging Face access conditions, authenticate locally, and install the [SAP Python package](https://github.com/SAP-samples/sap-rpt-1-oss) in the experiment environment. SAP recommends an 80 GB GPU for its best settings; this adapter uses its documented lighter setting of 2,048 context rows and one bag. The checkpoint's data license limits it to research use.
+
+Run `python -m pip install git+https://github.com/SAP-samples/sap-rpt-1-oss`, then `python -m experiments.run_experiments --models SAP-RPT-OSS --mode quick --output /tmp/rpt-quick.json`. For a complete matched grid, use `python -m experiments.run_experiments --models SAP-RPT-OSS --mode full --append` from the repository root. Only successful measured runs appear in the charts; the current published bundle contains no RPT results. The free [SAP RPT Playground](https://architecture.learning.sap.com/docs/golden-path/ai-golden-path/build-and-deliver/predictive-tabular-ai) allows at most 25 rows and 4 columns, so it cannot run this existing 1,000-row, eight-feature grid. Commercial SAP RPT needs a separate service deployment and should be reported as a different model.
 
 ## Interpreting the model comparison
 

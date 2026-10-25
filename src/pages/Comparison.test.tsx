@@ -22,4 +22,16 @@ describe('model comparison', () => {
     fireEvent.change(screen.getByLabelText('Comparison metric'), { target: { value: 'f1' } })
     expect(screen.getByText(/has the highest observed mean f1 score/).textContent).toContain('XGBoost')
   })
+
+  it('adds RPT only when a measured RPT run is present', () => {
+    const bundle = JSON.parse(readFileSync('public/experiments/results.json', 'utf8')) as { results: ExperimentResult[] }
+    const rpt = { ...bundle.results.find(row => row.experiment_type === 'size' && row.context_size === 100 && row.seed === 7)!, model_name: 'SAP-RPT-OSS' as const, experiment_id: 'measured-rpt-example' }
+    vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} })
+    render(<Comparison results={bundle.results} />)
+    expect(screen.getByText('RPT can be added')).toBeTruthy()
+    cleanup()
+    render(<Comparison results={[...bundle.results, rpt]} />)
+    expect(screen.queryByText('RPT can be added')).toBeNull()
+    expect(screen.getByRole('table').textContent).toContain('SAP-RPT-OSS')
+  })
 })

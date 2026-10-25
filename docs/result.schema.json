@@ -174,7 +174,8 @@
           "enum": [
             "TabPFN",
             "XGBoost",
-            "CatBoost"
+            "CatBoost",
+            "SAP-RPT-OSS"
           ]
         },
         "model_version": {

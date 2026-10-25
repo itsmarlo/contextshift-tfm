@@ -1,4 +1,4 @@
-"""Run actual offline TabPFN, XGBoost, and CatBoost experiments, then export static JSON."""
+"""Run offline measured model experiments, then export static JSON."""
 import argparse
 import json
 from datetime import datetime, timezone
@@ -15,6 +15,7 @@ from .interventions import corrupt_context, drift_context, nested_context, strat
 from .models.tfm_adapter import TabPFNAdapter
 from .models.xgboost_adapter import XGBoostAdapter
 from .models.catboost_adapter import CatBoostAdapter
+from .models.rpt_oss_adapter import RPTOssAdapter
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -44,7 +45,9 @@ def context_for(data, kind: str, level: int, seed: int, size: int = 100):
     raise ValueError(f'unknown experiment type: {kind}')
 
 
-ADAPTERS = {'TabPFN': TabPFNAdapter, 'XGBoost': XGBoostAdapter, 'CatBoost': CatBoostAdapter}
+ADAPTERS = {'TabPFN': TabPFNAdapter, 'XGBoost': XGBoostAdapter, 'CatBoost': CatBoostAdapter,
+            'SAP-RPT-OSS': RPTOssAdapter}
+DEFAULT_MODELS = ['TabPFN', 'XGBoost', 'CatBoost']
 
 
 def run(mode: str, models: list[str], output: Path, append: bool = False):
@@ -78,7 +81,8 @@ def run(mode: str, models: list[str], output: Path, append: bool = False):
                 context_preview = [{key: (None if pd.isna(value) else float(value)) for key, value in row.items()} for row in context_preview]
                 results.append(dict(experiment_id=f'{kind}-{level}-{seed}-{name.lower()}', experiment_type=kind,
                     dataset_version=DATASET_VERSION, model_name=name,
-                    model_version=version({'TabPFN': 'tabpfn', 'XGBoost': 'xgboost', 'CatBoost': 'catboost'}[name]), seed=seed,
+                    model_version=(adapter.version if name == 'SAP-RPT-OSS' else
+                                   version({'TabPFN': 'tabpfn', 'XGBoost': 'xgboost', 'CatBoost': 'catboost'}[name])), seed=seed,
                     context_size=len(context), configuration={'level': level, 'context_size': len(context)},
                     metrics=evaluate(truth, probability),
                     predictions=[{'id': int(i), 'truth': int(y), 'probability': float(p), 'predicted': int(p >= .5)}
@@ -86,7 +90,7 @@ def run(mode: str, models: list[str], output: Path, append: bool = False):
                     calibration=calibration,
                     fit_seconds=fit_seconds, predict_seconds=predict_seconds,
                     executed_at=datetime.now(timezone.utc).isoformat(),
-                    hardware=f'{platform.system()} {platform.machine()} · CPU {platform.processor() or "unknown"}',
+                    hardware=f'{platform.system()} {platform.machine()} · {getattr(adapter, "device_description", "CPU")} {platform.processor() or "unknown"}',
                     context_preview=context_preview,
                     test_preview=[{key: float(value) for key, value in row.items()} for row in test[FEATURES].head(10).to_dict(orient='records')],
                     context_summary={'premium_mean': float(context.premium.mean()), 'positive_rate': float(context.label.mean()), 'population_b_share': float(context.population.mean())},
@@ -107,7 +111,7 @@ def run(mode: str, models: list[str], output: Path, append: bool = False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mode', choices=['quick', 'full'], default='quick')
-    parser.add_argument('--models', nargs='+', choices=list(ADAPTERS), default=list(ADAPTERS))
+    parser.add_argument('--models', nargs='+', choices=list(ADAPTERS), default=DEFAULT_MODELS)
     parser.add_argument('--output', type=Path, default=ROOT / 'public/experiments/results.json')
     parser.add_argument('--append', action='store_true', help='Preserve existing measured runs and add new model runs')
     args = parser.parse_args()

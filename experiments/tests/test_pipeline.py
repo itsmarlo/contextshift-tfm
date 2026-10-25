@@ -1,4 +1,6 @@
 import json
+import sys
+from types import SimpleNamespace
 import numpy as np
 import pytest
 from experiments.evaluate import evaluate
@@ -7,6 +9,8 @@ from experiments.generate_dataset import FEATURES, generate_population, make_dat
 from experiments.interventions import corrupt_context, drift_context, nested_context, stratified_context
 from experiments.run_experiments import context_for
 from experiments.models.catboost_adapter import CatBoostAdapter
+from experiments.models.rpt_oss_adapter import RPTOssAdapter
+from experiments.run_experiments import DEFAULT_MODELS
 
 
 def test_generation_is_reproducible_and_period_changes_relation():
@@ -92,3 +96,31 @@ def test_catboost_baseline_predicts_probabilities_with_missing_features():
     assert probabilities.shape == (12,)
     assert np.isfinite(probabilities).all()
     assert ((probabilities >= 0) & (probabilities <= 1)).all()
+
+
+def test_rpt_oss_adapter_uses_feature_names_and_positive_class(monkeypatch):
+    class FakeClassifier:
+        def __init__(self, **settings):
+            assert settings['max_context_size'] == 2048
+            assert settings['bagging'] == 1
+            self.classes_ = np.array([1, 0])
+
+        def fit(self, x, y):
+            assert list(x.columns) == FEATURES
+            assert np.isnan(x.iloc[0, 0])
+            assert y.tolist() == [0, 1]
+
+        def predict_proba(self, x):
+            assert list(x.columns) == FEATURES
+            return np.array([[.8, .2]])
+
+    monkeypatch.setitem(sys.modules, 'torch', SimpleNamespace(
+        manual_seed=lambda seed: None,
+        cuda=SimpleNamespace(is_available=lambda: False),
+    ))
+    monkeypatch.setitem(sys.modules, 'sap_rpt_oss', SimpleNamespace(SAP_RPT_OSS_Classifier=FakeClassifier))
+    x = np.zeros((2, len(FEATURES)), dtype=np.float32)
+    x[0, 0] = np.nan
+    model = RPTOssAdapter(7).fit(x, np.array([0, 1]))
+    assert model.predict_proba(x[:1]).tolist() == [.8]
+    assert 'SAP-RPT-OSS' not in DEFAULT_MODELS
