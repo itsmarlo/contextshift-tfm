@@ -1,8 +1,8 @@
 export interface CsvTable { headers: string[]; rows: string[][] }
-export interface NumericRow { id: number; values: (number | null)[]; label: 0 | 1 | null }
-export interface LabeledRow extends NumericRow { label: 0 | 1 }
-export interface NumericDataset { features: string[]; rows: NumericRow[] }
-export interface CsvInfluence { id: number; label: 0 | 1; share: number }
+export interface NumericRow { id: number; values: (number | null)[]; label: number | null }
+export interface LabeledRow extends NumericRow { label: number }
+export interface NumericDataset { features: string[]; rows: NumericRow[]; kind: 'binary' | 'numeric' }
+export interface CsvInfluence { id: number; label: number; share: number }
 export const isLabeled = (row: NumericRow): row is LabeledRow => row.label !== null
 export const isPredictionCell = (value: string) => value === '' || value.toUpperCase() === '[PREDICT]'
 
@@ -41,8 +41,8 @@ export function parseCsv(text: string): CsvTable {
   if (records.length < 5) throw new Error('Use a header and at least four data rows.')
   if (records.length > 501) throw new Error('Use at most 500 data rows.')
   const headers = records[0]
-  if (headers.length < 2 || headers.some(name => !name)) throw new Error('The CSV needs named feature and label columns.')
-  if (headers.length > 51) throw new Error('Use at most 50 feature columns and one label column.')
+  if (headers.length < 2 || headers.some(name => !name)) throw new Error('The CSV needs named feature and target columns.')
+  if (headers.length > 51) throw new Error('Use at most 50 feature columns and one target column.')
   if (new Set(headers.map(name => name.toLowerCase())).size !== headers.length) throw new Error('Column names must be unique.')
   if (records.some(row => row.length !== headers.length)) throw new Error('Every CSV row must have the same number of columns.')
   return { headers, rows: records.slice(1) }
@@ -50,15 +50,18 @@ export function parseCsv(text: string): CsvTable {
 
 export function prepareDataset(table: CsvTable, target: string): NumericDataset {
   const targetIndex = table.headers.indexOf(target)
-  if (targetIndex < 0) throw new Error('Choose a label column.')
+  if (targetIndex < 0) throw new Error('Choose a target column.')
   const labels = table.rows.map(row => row[targetIndex])
-  if (labels.some(value => !isPredictionCell(value) && value !== '0' && value !== '1')) throw new Error('The label column must contain 0, 1, blank, or [PREDICT].')
-  if (!labels.includes('0') || !labels.includes('1')) throw new Error('The label column needs both 0 and 1 examples.')
+  if (labels.some(value => !isPredictionCell(value) && !Number.isFinite(Number(value)))) throw new Error('The target column must contain numbers, blank, or [PREDICT].')
+  const known = labels.filter(value => !isPredictionCell(value)).map(Number)
+  if (new Set(known).size < 2) throw new Error('The target column needs at least two different known values.')
+  const kind = known.every(value => value === 0 || value === 1) ? 'binary' : 'numeric'
   const featureIndices = table.headers.map((_, i) => i).filter(i => i !== targetIndex && table.rows.some(row => row[i] !== '') && table.rows.every(row => row[i] === '' || (Number.isFinite(Number(row[i])) && row[i].trim() !== '')))
   if (!featureIndices.length) throw new Error('Add at least one numeric feature column. Blank feature cells are allowed.')
   return {
     features: featureIndices.map(i => table.headers[i]),
-    rows: table.rows.map((row, i) => ({ id: i + 1, values: featureIndices.map(index => row[index] === '' ? null : Number(row[index])), label: isPredictionCell(labels[i]) ? null : Number(labels[i]) as 0 | 1 })),
+    rows: table.rows.map((row, i) => ({ id: i + 1, values: featureIndices.map(index => row[index] === '' ? null : Number(row[index])), label: isPredictionCell(labels[i]) ? null : Number(labels[i]) })),
+    kind,
   }
 }
 
@@ -70,7 +73,7 @@ export function featureScales(rows: NumericRow[], count: number): number[] {
   })
 }
 
-export function explainCsv(rows: LabeledRow[], query: NumericRow, scales: number[]): { probability: number | null; influences: CsvInfluence[] } {
+export function explainCsv(rows: LabeledRow[], query: NumericRow, scales: number[]): { prediction: number | null; influences: CsvInfluence[] } {
   const weighted = rows.map(row => {
     let distance = 0
     let observed = 0
@@ -84,7 +87,7 @@ export function explainCsv(rows: LabeledRow[], query: NumericRow, scales: number
   })
   const total = weighted.reduce((sum, row) => sum + row.weight, 0)
   return {
-    probability: total ? weighted.reduce((sum, row) => sum + row.weight * row.label, 0) / total : null,
+    prediction: total ? weighted.reduce((sum, row) => sum + row.weight * row.label, 0) / total : null,
     influences: weighted.map(row => ({ id: row.id, label: row.label, share: total ? row.weight / total : 0 })).sort((a, b) => b.share - a.share),
   }
 }

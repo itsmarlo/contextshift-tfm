@@ -12,7 +12,7 @@ describe('CSV experiment page', () => {
     render(<CsvExperiment />)
     fireEvent.click(screen.getByText('Load sample'))
     expect(await screen.findByText(/Loaded contextshift-predict-sample.csv/)).toBeTruthy()
-    expect((screen.getByLabelText('Label column') as HTMLSelectElement).value).toBe('claim')
+    expect((screen.getByLabelText('Target column') as HTMLSelectElement).value).toBe('claim')
     expect((screen.getByLabelText('Prediction row') as HTMLSelectElement).value).toBe('20')
     expect(screen.getByText('Predicted cells')).toBeTruthy()
     const output = () => screen.getByText('Simulated label 1 probability').parentElement?.querySelector('.csv-probability')?.textContent
@@ -25,5 +25,13 @@ describe('CSV experiment page', () => {
     fireEvent.click(screen.getByText('Reset changes'))
     expect(output()).toBe(original)
     expect(predictedCells()).toBe(originalCells)
+    fireEvent.change(screen.getByLabelText('Target column'), { target: { value: 'premium' } })
+    expect(screen.getByText('Simulated premium value')).toBeTruthy()
+    expect(screen.getByText(/Held-out actual:/)).toBeTruthy()
+    expect(screen.getByText(/Absolute error:/)).toBeTruthy()
+    expect(screen.queryByRole('alert')).toBeNull()
+    const numericOutput = screen.getByText('Simulated premium value').parentElement?.querySelector('.csv-probability')?.textContent
+    fireEvent.click(screen.getByText('Increase top target'))
+    expect(screen.getByText('Simulated premium value').parentElement?.querySelector('.csv-probability')?.textContent).not.toBe(numericOutput)
   })
 })

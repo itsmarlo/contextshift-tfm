@@ -7,7 +7,7 @@ ContextShift is a static research dashboard for studying how context size, quali
 ## Architecture
 
 - `src/pages/Playground.tsx`: editable three-panel workspace; a similarity-weighted educational simulator, and a read-only view of recorded runs.
-- `src/pages/CsvExperiment.tsx`: browser-only CSV workspace for numeric features and a binary 0/1 label; one row is held out as the query.
+- `src/pages/CsvExperiment.tsx`: browser-only CSV workspace for numeric features and a binary or continuous numeric target; selected rows are held out as queries.
 - `src/pages/Experiments.tsx` and `Comparison.tsx`: charts built only from exported measured JSON.
 - `src/pages/Learn.tsx` and `Methodology.tsx`: conceptual teaching and scientific protocol.
 - `src/simulation/model.ts`: documented browser similarity predictor.
@@ -19,7 +19,7 @@ Start with the Playground’s quick context experiments: flip the closest label,
 
 ## Try your own CSV
 
-Open **My CSV** and load a file or use the [sample CSV](public/samples/contextshift-predict-sample.csv). Files need a header, 4–500 rows, at most 50 feature columns, at least one numeric feature, and a label column with known `0` and `1` examples. Mark cells to predict with `[PREDICT]` or leave them blank. Blank numeric feature cells are allowed; text columns are skipped. The app shows a predicted class and simulated probability for each marked row. You can also hold out a labeled row, vary context size, flip an influential label, hide a feature, or edit context cells. Prediction rows are excluded from context; their target values are never used. Your file stays in the browser tab; no CSV content is sent to the site or stored remotely. This workspace uses the transparent educational similarity model, not a live TabPFN, XGBoost, or RPT run. The marker follows the [RPT Playground's example convention](https://developers.sap.com/tutorials/ai-core-genaihub-sap-rpt-model-usage).
+Open **My CSV** and load a file or use the [sample CSV](public/samples/contextshift-predict-sample.csv). Files need a header, 4–500 rows, at most 50 feature columns, at least one numeric feature, and a numeric target column with at least two different known values. Targets containing only `0` and `1` use binary classification; other numeric targets, such as `premium`, use a weighted-average regression demonstration. Mark cells to predict with `[PREDICT]` or leave them blank. Blank numeric feature cells are allowed; text columns are skipped. The app shows each marked row's simulated result. You can also hold out a known row, vary context size, change an influential target, hide a feature, or edit context cells. Prediction rows are excluded from context; their target values are never used. Your file stays in the browser tab; no CSV content is sent to the site or stored remotely. This workspace uses the transparent educational similarity model, not a live TabPFN, XGBoost, or RPT run. The marker follows the [RPT Playground's example convention](https://developers.sap.com/tutorials/ai-core-genaihub-sap-rpt-model-usage).
 
 ## Run locally on macOS
 
