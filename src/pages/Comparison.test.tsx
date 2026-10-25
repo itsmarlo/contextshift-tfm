@@ -34,6 +34,9 @@ describe('model comparison', () => {
     expect(screen.getByText(/Scores the probabilities assigned to the true outcomes/)).toBeTruthy()
     fireEvent.change(screen.getByLabelText('Comparison metric'), { target: { value: 'positive_rate' } })
     expect(screen.getByText(/It is not a performance score/)).toBeTruthy()
+    fireEvent.click(screen.getByText('What does each measure mean?'))
+    expect(screen.getByText(/How well are precision and recall balanced/)).toBeTruthy()
+    expect(screen.getByText(/not trapezoidal area under the precision/)).toBeTruthy()
   })
 
   it('adds RPT only when a measured RPT run is present', () => {

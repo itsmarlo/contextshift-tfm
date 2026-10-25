@@ -91,6 +91,33 @@
 .comparison-summary th:first-child,.comparison-summary td:first-child{white-space:normal}
 [data-theme=dark] .comparison-metric-guide{background:#332b1c}
 [data-theme=dark] .comparison-metric-guide strong{color:#e9efff}
+
+.metric-guide{margin:1rem 0;padding:1.3rem 1.5rem}
+.metric-guide summary{cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.metric-guide summary::-webkit-details-marker{display:none}
+.metric-guide summary::after{content:'+';display:grid;place-items:center;width:2rem;height:2rem;flex:none;border:1px solid #cbd8f5;border-radius:5px;color:#0038ff;font-size:1.25rem}
+.metric-guide[open] summary::after{content:'−'}
+.metric-guide summary .eyebrow,.metric-guide summary strong,.metric-guide summary small{display:block}
+.metric-guide summary strong{font-size:1rem;margin:.3rem 0}
+.metric-guide summary small{color:#72889a}
+.metric-guide-example{font-size:.76rem;background:#edf2ff;border-left:3px solid #0038ff;padding:.7rem .8rem;margin:1.25rem 0}
+.metric-guide-groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}
+.metric-guide-groups>section{border:1px solid #dce3f4;border-radius:6px;padding:1rem}
+.metric-guide-groups h3{font-size:.86rem;margin:0 0 .35rem}
+.metric-guide-groups>section>p{font-size:.7rem;margin:0 0 1rem}
+.metric-guide-groups dl{margin:0}
+.metric-guide-groups dl>div{border-top:1px solid #e5eafa;padding:.7rem 0}
+.metric-guide-groups dt{font-size:.73rem;font-weight:700;color:#132b5a}
+.metric-guide-groups dt small{display:block;font-size:.61rem;font-weight:600;color:#637786;margin:.15rem 0}
+.metric-guide-groups dd{font-size:.7rem;line-height:1.5;margin:.3rem 0 0;color:#637786}
+.metric-guide-groups dd strong{color:#273d5a}
+.metric-guide-groups dd span{display:block;margin-top:.25rem}
+.metric-guide-groups dd b{color:#273d5a}
+.metric-guide>.fineprint{margin:1rem 0 0}
+[data-theme=dark] .metric-guide summary strong,[data-theme=dark] .metric-guide-groups dt,[data-theme=dark] .metric-guide-groups dd strong,[data-theme=dark] .metric-guide-groups dd b{color:#e9efff}
+[data-theme=dark] .metric-guide-example{background:#1b2c60}
+[data-theme=dark] .metric-guide-groups>section,[data-theme=dark] .metric-guide-groups dl>div,[data-theme=dark] .metric-guide summary::after{border-color:#334675}
+@media(max-width:1100px){.metric-guide-groups{grid-template-columns:1fr}}
 @media(max-width:560px){.learn-flow,.learn-encoding,.learn-context-flow{gap:.55rem}.learn-flow-card,.learn-query-card{padding:.7rem}.learn-flow-card strong,.learn-query-card strong{font-size:.78rem}.learn-feature-chips{max-width:45%}.learn-evaluation{grid-template-columns:1fr}.learn-change-values>div{padding:.6rem}.learn-change-values strong{font-size:1.1rem}.learn-takeaway{display:grid;gap:.15rem}}
 
 @media(max-width:560px){.learn-example-table{min-width:0}.learn-premium-col{display:none!important}.learn-example-table th,.learn-example-table td{padding:.55rem .3rem;font-size:.69rem}}

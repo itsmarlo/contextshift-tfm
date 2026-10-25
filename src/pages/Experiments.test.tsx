@@ -18,5 +18,7 @@ describe('measured context experiments', () => {
     expect((screen.getByLabelText('Detail model') as HTMLSelectElement).value).toBe('CatBoost')
     fireEvent.click(screen.getByRole('tab', { name: 'Class imbalance' }))
     expect(screen.getByText('60')).toBeTruthy()
+    fireEvent.click(screen.getByText('What does each measure mean?'))
+    expect(screen.getByText(/What share of customers were flagged/)).toBeTruthy()
   })
 })
