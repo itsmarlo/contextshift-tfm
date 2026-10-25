@@ -25,4 +25,23 @@ describe('bundled measured results', () => {
       }
     }
   })
+  it('keeps thresholded metrics consistent with each saved confusion matrix', () => {
+    const bundle = JSON.parse(readFileSync('public/experiments/results.json', 'utf8')) as { results: ExperimentResult[] }
+    for (const run of bundle.results) {
+      const [[tn, fp], [fn, tp]] = run.metrics.confusion
+      const count = tn + fp + fn + tp
+      const precision = tp + fp ? tp / (tp + fp) : 0
+      const recall = tp + fn ? tp / (tp + fn) : 0
+      const f1 = 2 * tp + fp + fn ? 2 * tp / (2 * tp + fp + fn) : 0
+      expect(run.metrics.accuracy).toBeCloseTo((tn + tp) / count)
+      expect(run.metrics.precision).toBeCloseTo(precision)
+      expect(run.metrics.recall).toBeCloseTo(recall)
+      expect(run.metrics.f1).toBeCloseTo(f1)
+      expect(run.metrics.positive_rate).toBeCloseTo((tp + fp) / count)
+      expect(run.test_summary?.positive_rate).toBeCloseTo((tp + fn) / count)
+      for (const prediction of run.predictions) {
+        expect(prediction.predicted).toBe(Number(prediction.probability >= 0.5))
+      }
+    }
+  })
 })
