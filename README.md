@@ -2,7 +2,7 @@
 
 **The Tabular Foundation Model Lab** — Same model. Different context. Different predictions.
 
-ContextShift is a static research dashboard for studying how context size, quality, relevance, class balance, and drift affect tabular predictions. It includes an editable browser demonstration, a local CSV workspace, and a separate offline pipeline for measured TabPFN, XGBoost, and CatBoost experiments. The bundled study data is synthetic. No browser action calls a pretrained model.
+ContextShift is a static research dashboard for studying how context size, quality, relevance, class balance, and drift affect tabular predictions. It includes an editable browser demonstration, a local CSV workspace, and a separate offline pipeline for measured TabPFN, SAP-RPT-OSS, XGBoost, and CatBoost experiments. The bundled study data is synthetic. No browser action calls a pretrained model.
 
 ## Architecture
 
@@ -12,7 +12,7 @@ ContextShift is a static research dashboard for studying how context size, quali
 - `src/pages/Learn.tsx` and `Methodology.tsx`: conceptual teaching and scientific protocol.
 - `src/simulation/model.ts`: documented browser similarity predictor.
 - `experiments/`: synthetic data, controlled interventions, model adapters, metrics, and JSON export.
-- `public/experiments/results.json`: 396 matched, measured full-grid runs (132 each for TabPFN, XGBoost, and CatBoost) generated with Python 3.12.
+- `public/experiments/results.json`: 528 matched, measured full-grid runs (132 each for TabPFN, SAP-RPT-OSS, XGBoost, and CatBoost) generated with Python 3.12.
 - `docs/methodology.md`: equations, controls, and limitations. `docs/result.schema.json` defines the measured-result bundle.
 
 Start with the Playground’s quick context experiments: flip the closest label, add a nearby hypothetical claim example, or hide a feature. The prediction and row influence display update immediately, and Reset returns to the original ten rows. More interventions and direct cell edits remain available. The simulator gives each context row a weight `exp(-2 × mean squared scaled feature distance)` multiplied by the share of observed features. The probability is the weighted mean of known labels. This is an educational calculation, not TabPFN inference. Missing features contribute no distance and reduce a row's weight.
@@ -49,15 +49,15 @@ The thread limits avoid an OpenMP initialization crash observed on the validatio
 
 The optional `SAP-RPT-OSS` adapter uses the [research checkpoint released by SAP](https://huggingface.co/SAP/sap-rpt-1-oss), which is separate from SAP's commercial RPT Playground model. Accept the checkpoint's Hugging Face access conditions, authenticate locally, and install the [SAP Python package](https://github.com/SAP-samples/sap-rpt-1-oss) in the experiment environment. SAP recommends an 80 GB GPU for its best settings; this adapter uses its documented lighter setting of 2,048 context rows and one bag. The checkpoint's data license limits it to research use.
 
-Run `python -m pip install git+https://github.com/SAP-samples/sap-rpt-1-oss`, then `python -m experiments.run_experiments --models SAP-RPT-OSS --mode quick --output /tmp/rpt-quick.json`. For a complete matched grid, use `python -m experiments.run_experiments --models SAP-RPT-OSS --mode full --append` from the repository root. Only successful measured runs appear in the charts; the current published bundle contains no RPT results. The free [SAP RPT Playground](https://architecture.learning.sap.com/docs/golden-path/ai-golden-path/build-and-deliver/predictive-tabular-ai) allows at most 25 rows and 4 columns, so it cannot run this existing 1,000-row, eight-feature grid. Commercial SAP RPT needs a separate service deployment and should be reported as a different model.
+Run `python -m pip install git+https://github.com/SAP-samples/sap-rpt-1-oss`, then `python -m experiments.run_experiments --models SAP-RPT-OSS --mode quick --output /tmp/rpt-quick.json`. For a complete matched grid, use `python -m experiments.run_experiments --models SAP-RPT-OSS --mode full --append` from the repository root. The bundled RPT runs were measured on CPU using the cached checkpoint. The free [SAP RPT Playground](https://architecture.learning.sap.com/docs/golden-path/ai-golden-path/build-and-deliver/predictive-tabular-ai) allows at most 25 rows and 4 columns, so it cannot run this existing 1,000-row, eight-feature grid. Commercial SAP RPT needs a separate service deployment and should be reported as a different model.
 
 ## Interpreting the model comparison
 
 The [TabPFN benchmark paper](https://www.nature.com/articles/s41586-024-08328-6) reports strong average TabPFN performance against XGBoost and CatBoost on curated datasets with up to 10,000 rows; its aggregate scores are normalized across datasets. The [TabArena benchmark](https://papers.neurips.cc/paper_files/paper/2025/file/1697e3fb412da11dc9488249f9e7bbc9-Paper-Datasets_and_Benchmarks_Track.pdf) finds foundation models especially strong on compatible small datasets, while boosted trees remain competitive and tuning and validation design affect rankings. Neither establishes a winner for every dataset.
 
-On this project's synthetic clean context with 100 training rows, mean ROC AUC ± SD across three seeds is **0.664 ± 0.045 for CatBoost, 0.613 ± 0.107 for TabPFN, and 0.582 ± 0.118 for XGBoost**. This is one synthetic task with fixed model settings, and three context seeds do not establish statistical superiority across datasets. The held-out positive share is 9.7%; high accuracy can result from predicting mostly negative cases. The dashboard defaults to ROC AUC and allows inspection of PR AUC, F1, log loss, and individual predictions. It does not claim these local measurements are a real-world benchmark.
+On this project's synthetic clean context with 100 training rows, mean ROC AUC ± SD across three seeds is **0.666 ± 0.059 for SAP-RPT-OSS, 0.664 ± 0.045 for CatBoost, 0.613 ± 0.107 for TabPFN, and 0.582 ± 0.118 for XGBoost**. This is one synthetic task with fixed model settings, and three context seeds do not establish statistical superiority across datasets. The held-out positive share is 9.7%; high accuracy can result from predicting mostly negative cases. The dashboard defaults to ROC AUC and allows inspection of PR AUC, F1, log loss, and individual predictions. It does not claim these local measurements are a real-world benchmark.
 
-At 1,000 context rows, the corresponding mean ROC AUC is 0.734 for TabPFN and 0.741 for CatBoost, a gap of 0.0075. TabPFN scores higher for one of the three context seeds and CatBoost for two. The dashboard shows this paired seed count alongside the chart so the small difference is not presented as a decisive model ranking.
+At 1,000 context rows, mean ROC AUC is 0.741 for CatBoost, 0.734 for TabPFN, 0.716 for SAP-RPT-OSS, and 0.672 for XGBoost. TabPFN leads CatBoost on one of three context seeds and RPT on two of three; CatBoost leads TabPFN on two, and RPT leads TabPFN on one. The dashboard shows paired seed counts alongside the chart so these small, task-specific differences are not presented as a universal ranking.
 
 ## Quality checks and build
 
