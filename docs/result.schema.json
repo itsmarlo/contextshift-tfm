@@ -173,7 +173,8 @@
         "model_name": {
           "enum": [
             "TabPFN",
-            "XGBoost"
+            "XGBoost",
+            "CatBoost"
           ]
         },
         "model_version": {

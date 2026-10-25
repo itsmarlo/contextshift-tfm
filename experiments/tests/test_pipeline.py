@@ -6,6 +6,7 @@ from experiments.export_results import export
 from experiments.generate_dataset import FEATURES, generate_population, make_dataset
 from experiments.interventions import corrupt_context, drift_context, nested_context, stratified_context
 from experiments.run_experiments import context_for
+from experiments.models.catboost_adapter import CatBoostAdapter
 
 
 def test_generation_is_reproducible_and_period_changes_relation():
@@ -80,3 +81,14 @@ def test_exported_bundle_matches_schema():
     schema = json.loads((root / 'docs/result.schema.json').read_text())
     bundle = json.loads((root / 'public/experiments/results.json').read_text())
     jsonschema.Draft202012Validator(schema).validate(bundle)
+
+
+def test_catboost_baseline_predicts_probabilities_with_missing_features():
+    data = make_dataset(pool_size=120, test_size=12)
+    context = data.pool[FEATURES].to_numpy(dtype=np.float32)
+    context[0, 0] = np.nan
+    model = CatBoostAdapter(7).fit(context, data.pool.label.to_numpy(dtype=int))
+    probabilities = model.predict_proba(data.test[FEATURES].to_numpy(dtype=np.float32))
+    assert probabilities.shape == (12,)
+    assert np.isfinite(probabilities).all()
+    assert ((probabilities >= 0) & (probabilities <= 1)).all()

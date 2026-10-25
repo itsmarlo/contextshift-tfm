@@ -1,5 +1,5 @@
 export type ExperimentType = 'size' | 'missing' | 'labels' | 'noise' | 'outliers' | 'relevance' | 'imbalance' | 'drift'
-export type ModelName = 'TabPFN' | 'XGBoost'
+export type ModelName = 'TabPFN' | 'XGBoost' | 'CatBoost'
 export interface Metrics {
   accuracy: number; precision: number; recall: number; f1: number; roc_auc: number | null;
   pr_auc: number | null; log_loss: number; brier: number; positive_rate: number;

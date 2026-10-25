@@ -1,5 +1,7 @@
+import { readFileSync } from 'node:fs'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
+import type { ExperimentResult } from '../types/experiment'
 import { Playground } from './Playground'
 
 afterEach(cleanup)
@@ -35,5 +37,14 @@ describe('Playground', () => {
     expect(modified()).not.toBe(original)
     fireEvent.click(screen.getByText('Reset example'))
     expect(modified()).toBe(original)
+  })
+  it('shows recorded CatBoost predictions in real experiment mode', () => {
+    const bundle = JSON.parse(readFileSync('public/experiments/results.json', 'utf8')) as { results: ExperimentResult[] }
+    render(<Playground results={bundle.results} />)
+    fireEvent.click(screen.getByText('Real experiments'))
+    fireEvent.change(screen.getByLabelText('Model'), { target: { value: 'CatBoost' } })
+    expect(screen.queryByText('No measured result')).toBeNull()
+    expect(screen.getByText(/CatBoost 1.2.10/)).toBeTruthy()
+    expect(screen.getByText('ROC AUC')).toBeTruthy()
   })
 })
